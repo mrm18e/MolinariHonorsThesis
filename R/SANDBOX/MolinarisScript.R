@@ -27,4 +27,51 @@ ggplot(births, aes(x= birthyears, y = births, group =1)) +
 
 ## Making a Deaths dataset
 deaths <- dat %>%
+  dplyr::select(GEOID:CTYNAME,
+                DEATHS2010:DEATHS2019) %>%
+  pivot_longer(cols = c(DEATHS2010:DEATHS2019),
+               names_to = "deathyears",
+               values_to = "deaths") %>%
+  mutate(year = substr(deathyears,7,11)) %>%
+  filter(COUNTY == "000",
+         year != "2010") %>%
+  group_by(deathyears) %>%
+  summarise(deaths = sum(deaths))
 
+## Make a ggplot of the # of deaths between 2010-2019 for the US.
+ggplot(deaths, aes(x= deathyears, y = deaths, group =1)) +
+  geom_line(lwd=1)
+
+## Making a Domestic Migration dataset
+domesticmig <- dat %>%
+dplyr::select(GEOID:CTYNAME,
+              DOMESTICMIG2010:DOMESTICMIG2019) %>%
+  pivot_longer(cols = c(DOMESTICMIG2010:DOMESTICMIG2019),
+               names_to = "domesticmigyears",
+               values_to = "domesticmig") %>%
+  mutate(year = substr(domesticmigyears,7,11)) %>%
+  filter(COUNTY == "000",
+         year != "2010") %>%
+  group_by(domesticmigyears) %>%
+  summarise(domesticmig = sum(domesticmig))
+
+## Make a ggplot of the # of domestic migrations between 2010-2019 for the US.
+ggplot(domesticmig, aes(x= domesticmigyears, y = domesticmig, group =1)) +
+  geom_line(lwd=1)
+
+## Making an International Migration dataset
+internationalmig <- dat %>%
+  dplyr::select(GEOID:CTYNAME,
+                INTERNATIONALMIG2010:INTERNATIONALMIG2019) %>%
+  pivot_longer(cols = c(INTERNATIONALMIG2010:INTERNATIONALMIG2019),
+               names_to = "internationalmigyears",
+               values_to = "internationalmig") %>%
+  mutate(year = substr(internationalmigyears,7,11)) %>%
+  filter(COUNTY == "000",
+         year != "2010") %>%
+  group_by(internationalmigyears) %>%
+  summarise(internationalmig = sum(internationalmig))
+
+## Make a ggplot of the # of international migrations between 2010-2019 for the US.
+ggplot(internationalmig, aes(x= internationalmigyears, y = internationalmig, group =1)) +
+  geom_line(lwd=1)
