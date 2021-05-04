@@ -7,3 +7,6 @@ dat <- read_csv("./R/DATA-RAW/co-est2019-alldata.csv") %>%
                 INTERNATIONALMIG2010:DOMESTICMIG2019)
 quantile(dat$INTERNATIONALMIG2016, 0.5) 
 
+
+## This is a test! -- Matt Hauer
+
