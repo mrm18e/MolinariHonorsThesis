@@ -25,5 +25,6 @@ births <- dat %>%
 ggplot(births, aes(x= birthyears, y = births, group =1)) +
   geom_line(lwd=1)
 
-## This is a test! -- Matt Hauer
+## Making a Deaths dataset
+deaths <- dat %>%
 
