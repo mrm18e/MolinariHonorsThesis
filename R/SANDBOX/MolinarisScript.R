@@ -5,7 +5,7 @@ dat <- read_csv("./R/DATA-RAW/co-est2019-alldata.csv") %>%
                 POPESTIMATE2010:POPESTIMATE2019,
                 BIRTHS2010:DEATHS2019,
                 INTERNATIONALMIG2010:DOMESTICMIG2019) 
-quantile(dat$INTERNATIONALMIG2016, 0.75) 
+quantile(dat$INTERNATIONALMIG2016, 0.5) 
 
 
 ## Making a Births dataset
