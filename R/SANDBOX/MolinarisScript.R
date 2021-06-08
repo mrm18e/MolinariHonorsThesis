@@ -1,6 +1,8 @@
+## Good job, Matt! -- MH 06/08/2021
+
 rm(list=ls())
 library(tidyverse)
-library(scales)
+library(scales) 
 library(cowplot)
 dat <- read_csv("./R/DATA-RAW/co-est2020-alldata.csv") %>%
   mutate(GEOID = paste0(STATE, COUNTY)) %>%
