@@ -1,5 +1,5 @@
 
-## Making a Domestic Migrations dataset
+## Making an International Migrations dataset
 internationalmig <- dat %>%
   dplyr::select(GEOID:CTYNAME,
                 INTERNATIONALMIG2010:INTERNATIONALMIG2020) %>%
