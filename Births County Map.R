@@ -59,7 +59,7 @@ births <- births %>%
     perdrop <= 2 ~ "> 1.5"
   )) %>%
   I()
-# We need to convert the categories into a levelled factor. If we don't do this, the order is wrong.
+# We need to convert the categories into a leveled factor. If we don't do this, the order is wrong.
 births$groups_perdrop = factor(births$groups_perdrop,
                                levels = c("< 0.85", "< 1", "< 1.15", "< 1.5", "> 1.5"))
 # Using colorbrewer, we create an RGB color scheme.
