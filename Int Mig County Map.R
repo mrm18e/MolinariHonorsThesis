@@ -6,7 +6,7 @@ internationalmig <- dat %>%
   pivot_longer(cols = c(INTERNATIONALMIG2010:INTERNATIONALMIG2020),
                names_to = "internationalmigyears",
                values_to = "internationalmig") %>%
-  mutate(year = substr(internationalmigyears,7,11)) %>%
+  mutate(year = substr(internationalmigyears,17,20)) %>%
   filter(COUNTY != "000",
          year != "2010") %>%
   group_by(year, GEOID, STATE, COUNTY, STNAME, CTYNAME) %>% # Grouping by County, County name, and Year
@@ -34,19 +34,19 @@ internationalmig <- internationalmig %>%
   )) %>%
   I()
 
-# We need to convert the categories into a levelled factor. If we don't do this, the order is wrong.
+# We need to convert the categories into a leveled factor. If we don't do this, the order is wrong.
 internationalmig$groups_perdrop = factor(internationalmig$groups_perdrop,
-                                    levels = c("< 1", "< 1.15", "< 1.5", "< 2", "<6"))
+                                    levels = c("< 1", "< 1.15", "< 1.5", "< 2", "< 6"))
 # Using colorbrewer, we create an RGB color scheme.
 internationalmig$rgb <- "#999999" # we have to initialize the variable first.
-internationalmig$rgb[which(internationalmig$groups_perdrop == levels(internationalmig$groups_perdrop)[1])] <- "#2b83ba"
-internationalmig$rgb[which(internationalmig$groups_perdrop == levels(internationalmig$groups_perdrop)[2])] <- "#ffffbf"
-internationalmig$rgb[which(internationalmig$groups_perdrop == levels(internationalmig$groups_perdrop)[3])] <- "#fee090"
-internationalmig$rgb[which(internationalmig$groups_perdrop == levels(internationalmig$groups_perdrop)[4])] <- "#fc8d59"
-internationalmig$rgb[which(internationalmig$groups_perdrop == levels(internationalmig$groups_perdrop)[5])] <- "#d73027"
+internationalmig$rgb[which(internationalmig$groups_perdrop == levels(internationalmig$groups_perdrop)[1])] <- "#fee5d9"
+internationalmig$rgb[which(internationalmig$groups_perdrop == levels(internationalmig$groups_perdrop)[2])] <- "#fcae91"
+internationalmig$rgb[which(internationalmig$groups_perdrop == levels(internationalmig$groups_perdrop)[3])] <- "#fb6a4a"
+internationalmig$rgb[which(internationalmig$groups_perdrop == levels(internationalmig$groups_perdrop)[4])] <- "#de2d26"
+internationalmig$rgb[which(internationalmig$groups_perdrop == levels(internationalmig$groups_perdrop)[5])] <- "#a50f15"
 
 # Joining our birth data with our shapefile
-countydat <- left_join(shape, domesticmig)
+countydat <- left_join(shape, internationalmig)
 
 # Making our map
 map_internationalmig <- 
@@ -56,3 +56,7 @@ map_internationalmig <-
   theme_bw() +
   coord_sf(datum=NA) +
   theme(legend.position = "right")
+
+map_counties <- plot_grid(map_births, map_deaths,
+                     map_domesticmig, map_internationalmig,
+                     ncol = 2)

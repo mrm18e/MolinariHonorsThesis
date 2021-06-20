@@ -34,9 +34,9 @@ deaths <- deaths %>%
   )) %>%
   I()
 
-# We need to convert the categories into a levelled factor. If we don't do this, the order is wrong.
+# We need to convert the categories into a leveled factor. If we don't do this, the order is wrong.
 deaths$groups_perdrop = factor(deaths$groups_perdrop,
-                               levels = c("< 1", "< 1.15", "< 1.5", "< 2", "<6"))
+                               levels = c("< 1", "< 1.15", "< 1.5", "< 2", "< 6"))
 # Using colorbrewer, we create an RGB color scheme.
 deaths$rgb <- "#999999" # we have to initialize the variable first.
 deaths$rgb[which(deaths$groups_perdrop == levels(deaths$groups_perdrop)[1])] <- "#2b83ba"

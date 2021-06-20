@@ -6,14 +6,17 @@ domesticmig <- dat %>%
   pivot_longer(cols = c(DOMESTICMIG2010:DOMESTICMIG2020),
                names_to = "domesticmigyears",
                values_to = "domesticmig") %>%
-  mutate(year = substr(domesticmigyears,7,11)) %>%
+  mutate(year = substr(domesticmigyears,12,15)) %>%
   filter(COUNTY != "000",
          year != "2010") %>%
   group_by(year, GEOID, STATE, COUNTY, STNAME, CTYNAME) %>% # Grouping by County, County name, and Year
   summarise(domesticmig = sum(domesticmig)) %>%
   group_by(GEOID, CTYNAME) %>%
-  mutate(perdrop = domesticmig/lag(domesticmig)) %>%
+  mutate(perdrop = (domesticmig-lag(domesticmig))) %>%
   I()
+
+z <- domesticmig[which(domesticmig$GEOID == "01001"),] %>% 
+  filter(GEOID == "01001")
 
 domesticmig$perdrop[is.nan(domesticmig$perdrop)] <- NA # some values are 0/0 or 0/1 or 1/0. We set those to NA
 domesticmig[is.na(domesticmig)] <- 1 # we set all NA values to = 1.0
@@ -26,17 +29,17 @@ domesticmig <- domesticmig %>%
   dplyr::select(GEOID, perdrop) %>% # we select just our county ID and the percentage drop
   mutate(groups_perdrop = case_when( # we classify our percentage drops into given categories
     # perdrop <= 0.88 ~ "< 0.85",
-    perdrop < 1 ~ "< 1",
-    perdrop < 1.25 ~ "< 1.15",
-    perdrop < 1.5 ~ "< 1.5",
-    perdrop < 2 ~ "< 2",
-    perdrop >= 2 ~ "<6"
+    perdrop < -10000 ~ "< -10000",
+    perdrop < -1000 ~ "<-1000",
+    perdrop < 0 ~ "< 0",
+    perdrop < 3000 ~ "< 3000",
+    perdrop <= 15000 ~ "> 3000"
   )) %>%
   I()
 
-# We need to convert the categories into a levelled factor. If we don't do this, the order is wrong.
+# We need to convert the categories into a leveled factor. If we don't do this, the order is wrong.
 domesticmig$groups_perdrop = factor(domesticmig$groups_perdrop,
-                               levels = c("< 1", "< 1.15", "< 1.5", "< 2", "<6"))
+                               levels = c("< -1", "< 1.15", "< 1.5", "< 2", "< 6"))
 # Using colorbrewer, we create an RGB color scheme.
 domesticmig$rgb <- "#999999" # we have to initialize the variable first.
 domesticmig$rgb[which(domesticmig$groups_perdrop == levels(domesticmig$groups_perdrop)[1])] <- "#2b83ba"
@@ -56,3 +59,5 @@ map_domesticmig <-
   theme_bw() +
   coord_sf(datum=NA) +
   theme(legend.position = "right")
+
+#We need to use the numeric amount of migrations
