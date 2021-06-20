@@ -64,11 +64,11 @@ births$groups_perdrop = factor(births$groups_perdrop,
                                levels = c("< 0.85", "< 1", "< 1.15", "< 1.5", "> 1.5"))
 # Using colorbrewer, we create an RGB color scheme.
 births$rgb <- "#999999" # we have to initialize the variable first.
-births$rgb[which(births$groups_perdrop == levels(births$groups_perdrop)[1])] <- "#d7191c"
-births$rgb[which(births$groups_perdrop == levels(births$groups_perdrop)[2])] <- "#fdae61"
-births$rgb[which(births$groups_perdrop == levels(births$groups_perdrop)[3])] <- "#ffffbf"
-births$rgb[which(births$groups_perdrop == levels(births$groups_perdrop)[4])] <- "#abdda4"
-births$rgb[which(births$groups_perdrop == levels(births$groups_perdrop)[5])] <- "#2b83ba"
+births$rgb[which(births$groups_perdrop == levels(births$groups_perdrop)[1])] <- "#edf8e9"
+births$rgb[which(births$groups_perdrop == levels(births$groups_perdrop)[2])] <- "#bae4b3"
+births$rgb[which(births$groups_perdrop == levels(births$groups_perdrop)[3])] <- "#74c476"
+births$rgb[which(births$groups_perdrop == levels(births$groups_perdrop)[4])] <- "#31a354"
+births$rgb[which(births$groups_perdrop == levels(births$groups_perdrop)[5])] <- "#006d2c"
 
 # Joining our birth data with our shapefile
 countydat <- left_join(shape, births)

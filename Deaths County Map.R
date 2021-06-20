@@ -30,20 +30,21 @@ deaths <- deaths %>%
     perdrop < 1.25 ~ "< 1.15",
     perdrop < 1.5 ~ "< 1.5",
     perdrop < 2 ~ "< 2",
-    perdrop >= 2 ~ "<6"
+    perdrop >= 2 ~ "< 6"
   )) %>%
   I()
 
 # We need to convert the categories into a leveled factor. If we don't do this, the order is wrong.
 deaths$groups_perdrop = factor(deaths$groups_perdrop,
-                               levels = c("< 1", "< 1.15", "< 1.5", "< 2", "< 6"))
+                               levels = c("< 1", "< 1.15", "< 1.5", "< 2", "> 6"))
 # Using colorbrewer, we create an RGB color scheme.
 deaths$rgb <- "#999999" # we have to initialize the variable first.
-deaths$rgb[which(deaths$groups_perdrop == levels(deaths$groups_perdrop)[1])] <- "#2b83ba"
-deaths$rgb[which(deaths$groups_perdrop == levels(deaths$groups_perdrop)[2])] <- "#ffffbf"
-deaths$rgb[which(deaths$groups_perdrop == levels(deaths$groups_perdrop)[3])] <- "#fee090"
-deaths$rgb[which(deaths$groups_perdrop == levels(deaths$groups_perdrop)[4])] <- "#fc8d59"
-deaths$rgb[which(deaths$groups_perdrop == levels(deaths$groups_perdrop)[5])] <- "#d73027"
+deaths$rgb[which(deaths$groups_perdrop == levels(deaths$groups_perdrop)[1])] <- "#f2f0f7"
+deaths$rgb[which(deaths$groups_perdrop == levels(deaths$groups_perdrop)[2])] <- "#cbc9e2"
+deaths$rgb[which(deaths$groups_perdrop == levels(deaths$groups_perdrop)[3])] <- "#9e9ac8"
+deaths$rgb[which(deaths$groups_perdrop == levels(deaths$groups_perdrop)[4])] <- "#756bb1"
+deaths$rgb[which(deaths$groups_perdrop == levels(deaths$groups_perdrop)[5])] <- "#54278f"
+
 
 # Joining our birth data with our shapefile
 countydat <- left_join(shape, deaths)
