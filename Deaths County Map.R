@@ -45,6 +45,8 @@ deaths$rgb[which(deaths$groups_perdrop == levels(deaths$groups_perdrop)[3])] <- 
 deaths$rgb[which(deaths$groups_perdrop == levels(deaths$groups_perdrop)[4])] <- "#756bb1"
 deaths$rgb[which(deaths$groups_perdrop == levels(deaths$groups_perdrop)[5])] <- "#54278f"
 
+#CHANGE TO MAKE NEGATIVE BIRTHS NOTICEABLE WITH TWO COLOR SCHEME!!
+
 
 # Joining our birth data with our shapefile
 countydat <- left_join(shape, deaths)

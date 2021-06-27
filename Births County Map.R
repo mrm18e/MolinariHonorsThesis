@@ -70,6 +70,8 @@ births$rgb[which(births$groups_perdrop == levels(births$groups_perdrop)[3])] <- 
 births$rgb[which(births$groups_perdrop == levels(births$groups_perdrop)[4])] <- "#31a354"
 births$rgb[which(births$groups_perdrop == levels(births$groups_perdrop)[5])] <- "#006d2c"
 
+#CHANGE TO MAKE NEGATIVE BIRTHS NOTICEABLE WITH TWO COLOR SCHEME (FOR ALL)!! AND GET LEGENDS
+
 # Joining our birth data with our shapefile
 countydat <- left_join(shape, births)
 

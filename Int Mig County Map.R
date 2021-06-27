@@ -27,10 +27,10 @@ internationalmig <- internationalmig %>%
   mutate(groups_perdrop = case_when( # we classify our percentage drops into given categories
     # perdrop <= 0.88 ~ "< 0.85",
     perdrop < 1 ~ "< 1",
-    perdrop < 1.25 ~ "< 1.15",
+    perdrop < 1.15 ~ "< 1.15",
     perdrop < 1.5 ~ "< 1.5",
     perdrop < 2 ~ "< 2",
-    perdrop >= 2 ~ "<6"
+    perdrop >= 6 ~ "< 6"
   )) %>%
   I()
 
@@ -39,11 +39,11 @@ internationalmig$groups_perdrop = factor(internationalmig$groups_perdrop,
                                     levels = c("< 1", "< 1.15", "< 1.5", "< 2", "< 6"))
 # Using colorbrewer, we create an RGB color scheme.
 internationalmig$rgb <- "#999999" # we have to initialize the variable first.
-internationalmig$rgb[which(internationalmig$groups_perdrop == levels(internationalmig$groups_perdrop)[1])] <- "#fee5d9"
-internationalmig$rgb[which(internationalmig$groups_perdrop == levels(internationalmig$groups_perdrop)[2])] <- "#fcae91"
-internationalmig$rgb[which(internationalmig$groups_perdrop == levels(internationalmig$groups_perdrop)[3])] <- "#fb6a4a"
-internationalmig$rgb[which(internationalmig$groups_perdrop == levels(internationalmig$groups_perdrop)[4])] <- "#de2d26"
-internationalmig$rgb[which(internationalmig$groups_perdrop == levels(internationalmig$groups_perdrop)[5])] <- "#a50f15"
+internationalmig$rgb[which(internationalmig$groups_perdrop == levels(internationalmig$groups_perdrop)[1])] <- "#a6611a"
+internationalmig$rgb[which(internationalmig$groups_perdrop == levels(internationalmig$groups_perdrop)[2])] <- "#dfc27d"
+internationalmig$rgb[which(internationalmig$groups_perdrop == levels(internationalmig$groups_perdrop)[3])] <- "#f5f5f5"
+internationalmig$rgb[which(internationalmig$groups_perdrop == levels(internationalmig$groups_perdrop)[4])] <- "#80cdc1"
+internationalmig$rgb[which(internationalmig$groups_perdrop == levels(internationalmig$groups_perdrop)[5])] <- "#018571"
 
 # Joining our birth data with our shapefile
 countydat <- left_join(shape, internationalmig)
