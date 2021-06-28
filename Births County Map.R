@@ -44,49 +44,56 @@ births <- dat %>%
   group_by(year, GEOID, STATE, COUNTY, STNAME, CTYNAME) %>% # Grouping by County, County name, and Year
   summarise(births = sum(births)) %>% # Getting the total number of births by year.
   group_by(GEOID, CTYNAME) %>% # Same grouping above but dropping year
-  mutate(perdrop = births/lag(births))
+  mutate(perdrop =  births/lag(births)-1)
 births$perdrop[is.nan(births$perdrop)] <- NA # some values are 0/0 or 0/1 or 1/0. We set those to NA
-births[is.na(births)] <- 1 # we set all NA values to = 1.0
+births[is.na(births)] <- 0 # we set all NA values to = 1.0
 
+jenks_births <-  births %>%
+  filter(year == 2020)
+getJenksBreaks(jenks_births$perdrop, 5)
 births <- births %>%
   filter(year == 2020) %>% # we only want the 2020 change
   dplyr::select(GEOID, perdrop) %>% # we select just our county ID and the percentage drop
   mutate(groups_perdrop = case_when( # we classify our percentage drops into given categories
-    perdrop <= 0.25 ~ "< 0.25",
-    perdrop < 0.5 ~ "< 0.5",
-    perdrop < 1 ~ "< 1",
-    perdrop < 1.5 ~ "< 1.5",
-    perdrop <= 2 ~ "> 2"
+    perdrop <= -0.5 ~ "< -50%",
+    perdrop < -0.25 ~ "< -25%",
+    perdrop < 0 ~ "< 0%",
+    perdrop < 0.25 ~ "< 25%",
+    perdrop <= 2 ~ "> 100%"
   )) %>%
   I()
 # We need to convert the categories into a leveled factor. If we don't do this, the order is wrong.
 births$groups_perdrop = factor(births$groups_perdrop,
-                               levels = c("< 0.25", "< 0.5", "< 1", "< 1.5", "> 2"))
+                               levels = c("< -50%", "< -25%", "< 0%", "< 25%", "> 100%"))
 # Using colorbrewer, we create an RGB color scheme.
 births$rgb <- "#999999" # we have to initialize the variable first.
-births$rgb[which(births$groups_perdrop == levels(births$groups_perdrop)[1])] <- "#d01c8b"
-births$rgb[which(births$groups_perdrop == levels(births$groups_perdrop)[2])] <- "#f1b6da"
-births$rgb[which(births$groups_perdrop == levels(births$groups_perdrop)[3])] <- "#f7f7f7"
+births$rgb[which(births$groups_perdrop == levels(births$groups_perdrop)[1])] <- "#c51b7d"
+births$rgb[which(births$groups_perdrop == levels(births$groups_perdrop)[2])] <- "#e9a3c9"
+births$rgb[which(births$groups_perdrop == levels(births$groups_perdrop)[3])] <- "#fde0ef"
 births$rgb[which(births$groups_perdrop == levels(births$groups_perdrop)[4])] <- "#b8e186"
 births$rgb[which(births$groups_perdrop == levels(births$groups_perdrop)[5])] <- "#4dac26"
 
-#CHANGE TO MAKE NEGATIVE BIRTHS NOTICEABLE WITH TWO COLOR SCHEME (FOR ALL)!! AND GET LEGENDS
-#MAKE '1' THE MIDPOINT FOR ALL CATEGORIES
 
 # Joining our birth data with our shapefile
 countydat <- left_join(shape, births)
 
+pal2 <- c( "#c51b7d",  "#e9a3c9", "#fde0ef",  "#b8e186", "#4dac26")
+
 # Making our map
 map_births <- 
-  ggplot() +
-  geom_sf(data = countydat, fill = countydat$rgb, color = NA) + # we set the fill to equal the raw color code
+  ggplot(data = countydat) +
+  geom_sf(aes(fill = groups_perdrop), color = NA) + # we set the fill to equal the raw color code
   geom_sf(data = states, fill=NA, color = "black") +
+  scale_fill_manual(values = pal2, na.value = "#999999") +
   theme_bw() +
   coord_sf(datum=NA) +
-  theme(legend.position = "right")
+  theme(legend.position = "right") +
+  labs(fill = "% Change in Births")
 
 countydat %>%
   ggplot(aes(fill = rgb)) +
   geom_sf(color = NA)
+
+#GET RID OF WHITE AS THE MIDDLE COLOR, SOLVE PROBLEM FOR TURNING MIGRATION NUMBERS INTO 0 - 100 PERCENTAGES
 
 
