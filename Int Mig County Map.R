@@ -27,16 +27,16 @@ internationalmig <- internationalmig %>%
   mutate(groups_perdrop = case_when( # we classify our percentage drops into given categories
     # perdrop <= 0.88 ~ "< 0.85",
     perdrop < 1 ~ "< 1",
-    perdrop < 1.15 ~ "< 1.15",
-    perdrop < 1.5 ~ "< 1.5",
-    perdrop < 2 ~ "< 2",
-    perdrop >= 6 ~ "< 6"
+    perdrop < 3 ~ "< 3",
+    perdrop < 6 ~ "< 6",
+    perdrop < 9 ~ "> 9",
+    perdrop <= Inf ~ "Inf"
   )) %>%
   I()
 
 # We need to convert the categories into a leveled factor. If we don't do this, the order is wrong.
 internationalmig$groups_perdrop = factor(internationalmig$groups_perdrop,
-                                    levels = c("< 1", "< 1.15", "< 1.5", "< 2", "< 6"))
+                                    levels = c("< 1", "< 3", "< 6", "> 9", "Inf"))
 # Using colorbrewer, we create an RGB color scheme.
 internationalmig$rgb <- "#999999" # we have to initialize the variable first.
 internationalmig$rgb[which(internationalmig$groups_perdrop == levels(internationalmig$groups_perdrop)[1])] <- "#a6611a"
