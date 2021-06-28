@@ -42,11 +42,11 @@ domesticmig$groups_perdrop = factor(domesticmig$groups_perdrop,
                                levels = c("< -10000", "< -1000", "< 0", "< 3000", "> 3000"))
 # Using colorbrewer, we create an RGB color scheme.
 domesticmig$rgb <- "#999999" # we have to initialize the variable first.
-domesticmig$rgb[which(domesticmig$groups_perdrop == levels(domesticmig$groups_perdrop)[1])] <- "#eff3ff"
-domesticmig$rgb[which(domesticmig$groups_perdrop == levels(domesticmig$groups_perdrop)[2])] <- "#bdd7e7"
-domesticmig$rgb[which(domesticmig$groups_perdrop == levels(domesticmig$groups_perdrop)[3])] <- "#6baed6"
-domesticmig$rgb[which(domesticmig$groups_perdrop == levels(domesticmig$groups_perdrop)[4])] <- "#3182bd"
-domesticmig$rgb[which(domesticmig$groups_perdrop == levels(domesticmig$groups_perdrop)[5])] <- "#08519c"
+domesticmig$rgb[which(domesticmig$groups_perdrop == levels(domesticmig$groups_perdrop)[1])] <- "#ca0020"
+domesticmig$rgb[which(domesticmig$groups_perdrop == levels(domesticmig$groups_perdrop)[2])] <- "#f4a582"
+domesticmig$rgb[which(domesticmig$groups_perdrop == levels(domesticmig$groups_perdrop)[3])] <- "#f7f7f7"
+domesticmig$rgb[which(domesticmig$groups_perdrop == levels(domesticmig$groups_perdrop)[4])] <- "#92c5de"
+domesticmig$rgb[which(domesticmig$groups_perdrop == levels(domesticmig$groups_perdrop)[5])] <- "#0571b0"
 
 # Joining our birth data with our shapefile
 countydat <- left_join(shape, domesticmig)

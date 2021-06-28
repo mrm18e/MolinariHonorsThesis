@@ -27,10 +27,10 @@ deaths <- deaths %>%
   mutate(groups_perdrop = case_when( # we classify our percentage drops into given categories
     # perdrop <= 0.88 ~ "< 0.85",
     perdrop < 1 ~ "< 1",
-    perdrop < 1.25 ~ "< 1.15",
+    perdrop < 1.15 ~ "< 1.15",
     perdrop < 1.5 ~ "< 1.5",
     perdrop < 2 ~ "< 2",
-    perdrop >= 2 ~ "< 6"
+    perdrop >= 6 ~ "< 6"
   )) %>%
   I()
 
@@ -39,11 +39,11 @@ deaths$groups_perdrop = factor(deaths$groups_perdrop,
                                levels = c("< 1", "< 1.15", "< 1.5", "< 2", "> 6"))
 # Using colorbrewer, we create an RGB color scheme.
 deaths$rgb <- "#999999" # we have to initialize the variable first.
-deaths$rgb[which(deaths$groups_perdrop == levels(deaths$groups_perdrop)[1])] <- "#f2f0f7"
-deaths$rgb[which(deaths$groups_perdrop == levels(deaths$groups_perdrop)[2])] <- "#cbc9e2"
-deaths$rgb[which(deaths$groups_perdrop == levels(deaths$groups_perdrop)[3])] <- "#9e9ac8"
-deaths$rgb[which(deaths$groups_perdrop == levels(deaths$groups_perdrop)[4])] <- "#756bb1"
-deaths$rgb[which(deaths$groups_perdrop == levels(deaths$groups_perdrop)[5])] <- "#54278f"
+deaths$rgb[which(deaths$groups_perdrop == levels(deaths$groups_perdrop)[1])] <- "#e66101"
+deaths$rgb[which(deaths$groups_perdrop == levels(deaths$groups_perdrop)[2])] <- "#fdb863"
+deaths$rgb[which(deaths$groups_perdrop == levels(deaths$groups_perdrop)[3])] <- "#f7f7f7"
+deaths$rgb[which(deaths$groups_perdrop == levels(deaths$groups_perdrop)[4])] <- "#b2abd2"
+deaths$rgb[which(deaths$groups_perdrop == levels(deaths$groups_perdrop)[5])] <- "#5e3c99"
 
 #CHANGE TO MAKE NEGATIVE BIRTHS NOTICEABLE WITH TWO COLOR SCHEME!!
 

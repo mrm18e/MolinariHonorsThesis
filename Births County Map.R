@@ -52,25 +52,26 @@ births <- births %>%
   filter(year == 2020) %>% # we only want the 2020 change
   dplyr::select(GEOID, perdrop) %>% # we select just our county ID and the percentage drop
   mutate(groups_perdrop = case_when( # we classify our percentage drops into given categories
-    perdrop <= 0.85 ~ "< 0.85",
+    perdrop <= 0.25 ~ "< 0.25",
+    perdrop < 0.5 ~ "< 0.5",
     perdrop < 1 ~ "< 1",
-    perdrop < 1.15 ~ "< 1.15",
     perdrop < 1.5 ~ "< 1.5",
-    perdrop <= 2 ~ "> 1.5"
+    perdrop <= 2 ~ "> 2"
   )) %>%
   I()
 # We need to convert the categories into a leveled factor. If we don't do this, the order is wrong.
 births$groups_perdrop = factor(births$groups_perdrop,
-                               levels = c("< 0.85", "< 1", "< 1.15", "< 1.5", "> 1.5"))
+                               levels = c("< 0.25", "< 0.5", "< 1", "< 1.5", "> 2"))
 # Using colorbrewer, we create an RGB color scheme.
 births$rgb <- "#999999" # we have to initialize the variable first.
-births$rgb[which(births$groups_perdrop == levels(births$groups_perdrop)[1])] <- "#edf8e9"
-births$rgb[which(births$groups_perdrop == levels(births$groups_perdrop)[2])] <- "#bae4b3"
-births$rgb[which(births$groups_perdrop == levels(births$groups_perdrop)[3])] <- "#74c476"
-births$rgb[which(births$groups_perdrop == levels(births$groups_perdrop)[4])] <- "#31a354"
-births$rgb[which(births$groups_perdrop == levels(births$groups_perdrop)[5])] <- "#006d2c"
+births$rgb[which(births$groups_perdrop == levels(births$groups_perdrop)[1])] <- "#d01c8b"
+births$rgb[which(births$groups_perdrop == levels(births$groups_perdrop)[2])] <- "#f1b6da"
+births$rgb[which(births$groups_perdrop == levels(births$groups_perdrop)[3])] <- "#f7f7f7"
+births$rgb[which(births$groups_perdrop == levels(births$groups_perdrop)[4])] <- "#b8e186"
+births$rgb[which(births$groups_perdrop == levels(births$groups_perdrop)[5])] <- "#4dac26"
 
 #CHANGE TO MAKE NEGATIVE BIRTHS NOTICEABLE WITH TWO COLOR SCHEME (FOR ALL)!! AND GET LEGENDS
+#MAKE '1' THE MIDPOINT FOR ALL CATEGORIES
 
 # Joining our birth data with our shapefile
 countydat <- left_join(shape, births)
