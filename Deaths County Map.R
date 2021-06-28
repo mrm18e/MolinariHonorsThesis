@@ -30,7 +30,7 @@ deaths <- deaths %>%
     perdrop < 1.15 ~ "< 1.15",
     perdrop < 1.5 ~ "< 1.5",
     perdrop < 2 ~ "< 2",
-    perdrop >= 6 ~ "< 6"
+    perdrop <= 6 ~ "> 6"
   )) %>%
   I()
 

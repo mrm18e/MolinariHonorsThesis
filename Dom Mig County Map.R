@@ -30,16 +30,16 @@ domesticmig <- domesticmig %>%
   mutate(groups_perdrop = case_when( # we classify our percentage drops into given categories
     # perdrop <= 0.88 ~ "< 0.85",
     perdrop < -10000 ~ "< -10000",
-    perdrop < -2000 ~ "<-1000",
+    perdrop < -1000 ~ "< -1000",
     perdrop < 0 ~ "< 0",
     perdrop < 3000 ~ "< 3000",
-    perdrop <= 15000 ~ "> 3000"
+    perdrop <= 15000 ~ "> 15000"
   )) %>%
   I()
 
 # We need to convert the categories into a leveled factor. If we don't do this, the order is wrong.
 domesticmig$groups_perdrop = factor(domesticmig$groups_perdrop,
-                               levels = c("< -10000", "< -1000", "< 0", "< 3000", "> 3000"))
+                               levels = c("< -10000", "< -1000", "< 0", "< 3000", "> 15000"))
 # Using colorbrewer, we create an RGB color scheme.
 domesticmig$rgb <- "#999999" # we have to initialize the variable first.
 domesticmig$rgb[which(domesticmig$groups_perdrop == levels(domesticmig$groups_perdrop)[1])] <- "#ca0020"
