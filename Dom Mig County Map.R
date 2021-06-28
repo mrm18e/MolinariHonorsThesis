@@ -12,7 +12,7 @@ domesticmig <- dat %>%
   group_by(year, GEOID, STATE, COUNTY, STNAME, CTYNAME) %>% # Grouping by County, County name, and Year
   summarise(domesticmig = sum(domesticmig)) %>%
   group_by(GEOID, CTYNAME) %>%
-  mutate(perdrop = (domesticmig-lag(domesticmig))) %>%
+  mutate(perdrop = (domesticmig-lag(domesticmig))-1) %>%
   I()
 
 z <- domesticmig[which(domesticmig$GEOID == "01001"),] %>% 
@@ -21,6 +21,9 @@ z <- domesticmig[which(domesticmig$GEOID == "01001"),] %>%
 domesticmig$perdrop[is.nan(domesticmig$perdrop)] <- NA # some values are 0/0 or 0/1 or 1/0. We set those to NA
 domesticmig[is.na(domesticmig)] <- 1 # we set all NA values to = 1.0
 
+jenks_domesticmig <-  domesticmig %>%
+  filter(year == 2020)
+getJenksBreaks(jenks_domesticmig$perdrop, 5)
 domesticmig <- domesticmig %>%
   filter(year == 2020) # we only want the 2020 change
 
@@ -28,12 +31,11 @@ getJenksBreaks(domesticmig$perdrop, 6)
 domesticmig <- domesticmig %>%
   dplyr::select(GEOID, perdrop) %>% # we select just our county ID and the percentage drop
   mutate(groups_perdrop = case_when( # we classify our percentage drops into given categories
-    # perdrop <= 0.88 ~ "< 0.85",
-    perdrop < -10000 ~ "< -10000",
-    perdrop < -1000 ~ "< -1000",
-    perdrop < 0 ~ "< 0",
-    perdrop < 3000 ~ "< 3000",
-    perdrop <= 15000 ~ "> 15000"
+    perdrop < -0.5 ~ "< -50%",
+    perdrop < -0.25 ~ "< -25%",
+    perdrop < 0 ~ "< 0%",
+    perdrop < 0.25 ~ "< 25%",
+    perdrop <= 2 ~ "> 100%"
   )) %>%
   I()
 
@@ -51,13 +53,21 @@ domesticmig$rgb[which(domesticmig$groups_perdrop == levels(domesticmig$groups_pe
 # Joining our birth data with our shapefile
 countydat <- left_join(shape, domesticmig)
 
+pal2 <- c( "#ca0020",  "#f4a582", "#f7f7f7",  "#92c5de", "#0571b0")
+
 # Making our map
 map_domesticmig <- 
-  ggplot() +
-  geom_sf(data = countydat, fill = countydat$rgb, color = NA) + # we set the fill to equal the raw color code
+  ggplot(data = countydat) +
+  geom_sf(aes(fill = groups_perdrop), color = NA) + # we set the fill to equal the raw color code
   geom_sf(data = states, fill=NA, color = "black") +
+  scale_fill_manual(values = pal2, na.value = "#999999") +
   theme_bw() +
   coord_sf(datum=NA) +
-  theme(legend.position = "right")
+  theme(legend.position = "right") +
+  labs(fill = "% Change in Domestic Migration")
+
+countydat %>%
+  ggplot(aes(fill = rgb)) +
+  geom_sf(color = NA)
 
 #We need to use the numeric amount of migrations
