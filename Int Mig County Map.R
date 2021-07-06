@@ -70,3 +70,5 @@ countydat %>%
 map_counties <- plot_grid(map_births, map_deaths,
                      map_domesticmig, map_internationalmig,
                      ncol = 2)
+
+#ABBREVIATE DOM MIGRATION AND INTERNATIONAL MIGRATION TITLES ... ONE PARAGRAPH PER EACH PANEL (1 FOR SIMILARITIES 'SPECULATION' - LACKING IN IRS DATA AND 1 FOR DIFFERENCES)
