@@ -12,11 +12,8 @@ domesticmig <- dat %>%
   group_by(year, GEOID, STATE, COUNTY, STNAME, CTYNAME) %>% # Grouping by County, County name, and Year
   summarise(domesticmig = sum(domesticmig)) %>%
   group_by(GEOID, CTYNAME) %>%
-  mutate(perdrop = (domesticmig-lag(domesticmig))-1) %>%
+  mutate(perdrop = domesticmig/lag(domesticmig)-1) %>%
   I()
-
-z <- domesticmig[which(domesticmig$GEOID == "01001"),] %>% 
-  filter(GEOID == "01001")
 
 domesticmig$perdrop[is.nan(domesticmig$perdrop)] <- NA # some values are 0/0 or 0/1 or 1/0. We set those to NA
 domesticmig[is.na(domesticmig)] <- 1 # we set all NA values to = 1.0
@@ -26,6 +23,9 @@ jenks_domesticmig <-  domesticmig %>%
 getJenksBreaks(jenks_domesticmig$perdrop, 5)
 domesticmig <- domesticmig %>%
   filter(year == 2020) # we only want the 2020 change
+
+z <- domesticmig[which(domesticmig$GEOID == "01001"),] %>% 
+  filter(GEOID == "01001")
 
 getJenksBreaks(domesticmig$perdrop, 6)
 domesticmig <- domesticmig %>%
@@ -41,19 +41,19 @@ domesticmig <- domesticmig %>%
 
 # We need to convert the categories into a leveled factor. If we don't do this, the order is wrong.
 domesticmig$groups_perdrop = factor(domesticmig$groups_perdrop,
-                               levels = c("< -10000", "< -1000", "< 0", "< 3000", "> 15000"))
+                               levels = c("< -50%", "< -25%", "< 0%", "< 25%", "> 100%"))
 # Using colorbrewer, we create an RGB color scheme.
 domesticmig$rgb <- "#999999" # we have to initialize the variable first.
 domesticmig$rgb[which(domesticmig$groups_perdrop == levels(domesticmig$groups_perdrop)[1])] <- "#ca0020"
 domesticmig$rgb[which(domesticmig$groups_perdrop == levels(domesticmig$groups_perdrop)[2])] <- "#f4a582"
-domesticmig$rgb[which(domesticmig$groups_perdrop == levels(domesticmig$groups_perdrop)[3])] <- "#f7f7f7"
+domesticmig$rgb[which(domesticmig$groups_perdrop == levels(domesticmig$groups_perdrop)[3])] <- "#f4b6c2"
 domesticmig$rgb[which(domesticmig$groups_perdrop == levels(domesticmig$groups_perdrop)[4])] <- "#92c5de"
 domesticmig$rgb[which(domesticmig$groups_perdrop == levels(domesticmig$groups_perdrop)[5])] <- "#0571b0"
 
 # Joining our birth data with our shapefile
 countydat <- left_join(shape, domesticmig)
 
-pal2 <- c( "#ca0020",  "#f4a582", "#f7f7f7",  "#92c5de", "#0571b0")
+pal2 <- c( "#ca0020",  "#f4a582", "#f4b6c2",  "#92c5de", "#0571b0")
 
 # Making our map
 map_domesticmig <- 
@@ -71,3 +71,4 @@ countydat %>%
   geom_sf(color = NA)
 
 #We need to use the numeric amount of migrations
+

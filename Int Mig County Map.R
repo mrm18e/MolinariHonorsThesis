@@ -38,19 +38,19 @@ internationalmig <- internationalmig %>%
 
 # We need to convert the categories into a leveled factor. If we don't do this, the order is wrong.
 internationalmig$groups_perdrop = factor(internationalmig$groups_perdrop,
-                                    levels = c("< 1", "< 3", "< 6", "> 9", "Inf"))
+                                    levels = c("< -50%", "< -25%", "< 0%", "< 25%", "> 100%"))
 # Using colorbrewer, we create an RGB color scheme.
 internationalmig$rgb <- "#999999" # we have to initialize the variable first.
 internationalmig$rgb[which(internationalmig$groups_perdrop == levels(internationalmig$groups_perdrop)[1])] <- "#a6611a"
 internationalmig$rgb[which(internationalmig$groups_perdrop == levels(internationalmig$groups_perdrop)[2])] <- "#dfc27d"
-internationalmig$rgb[which(internationalmig$groups_perdrop == levels(internationalmig$groups_perdrop)[3])] <- "#f5f5f5"
+internationalmig$rgb[which(internationalmig$groups_perdrop == levels(internationalmig$groups_perdrop)[3])] <- "#f3deba"
 internationalmig$rgb[which(internationalmig$groups_perdrop == levels(internationalmig$groups_perdrop)[4])] <- "#80cdc1"
 internationalmig$rgb[which(internationalmig$groups_perdrop == levels(internationalmig$groups_perdrop)[5])] <- "#018571"
 
 # Joining our birth data with our shapefile
 countydat <- left_join(shape, internationalmig)
 
-pal2 <- c( "#a6611a",  "#dfc27d", "#f5f5f5",  "#80cdc1", "#018571")
+pal2 <- c( "#a6611a",  "#dfc27d", "#f3deba",  "#80cdc1", "#018571")
 
 # Making our map
 map_internationalmig <- 
