@@ -12,7 +12,8 @@ internationalmig <- dat %>%
   group_by(year, GEOID, STATE, COUNTY, STNAME, CTYNAME) %>% # Grouping by County, County name, and Year
   summarise(internationalmig = sum(internationalmig)) %>%
   group_by(GEOID, CTYNAME) %>%
-  mutate(perdrop = internationalmig/lag(internationalmig)-1) %>%
+  mutate(perdrop = (internationalmig - lag(internationalmig))/abs(lag(internationalmig))) %>%
+  # mutate(perdrop = if_else(lag(internationalmig)<0,abs(perdrop), perdrop)) %>%
   I()
 
 internationalmig$perdrop[is.nan(internationalmig$perdrop)] <- NA # some values are 0/0 or 0/1 or 1/0. We set those to NA
@@ -20,25 +21,30 @@ internationalmig[is.na(internationalmig)] <- 1 # we set all NA values to = 1.0
 
 jenks_internationalmig <-  internationalmig %>%
   filter(year == 2020)
+
+# Some values are Inf and -Inf. We drop them for the Jenks calculations.
+jenks_internationalmig <- jenks_internationalmig[!is.infinite(jenks_internationalmig$perdrop),]
 getJenksBreaks(jenks_internationalmig$perdrop, 5)
 internationalmig <- internationalmig %>%
   filter(year == 2020) # we only want the 2020 change
 
+z <- internationalmig[which(internationalmig$GEOID == "01001"),] %>% 
+  filter(GEOID == "01001")
 getJenksBreaks(internationalmig$perdrop, 6)
 internationalmig <- internationalmig %>%
   dplyr::select(GEOID, perdrop) %>% # we select just our county ID and the percentage drop
   mutate(groups_perdrop = case_when( # we classify our percentage drops into given categories
-    perdrop <= -0.5 ~ "< -50%",
-    perdrop < -0.25 ~ "< -25%",
+    perdrop <= -1 ~ "< -100%",
+    perdrop < -0.5 ~ "< -50%",
     perdrop < 0 ~ "< 0%",
-    perdrop < 0.25 ~ "< 25%",
-    perdrop <= 2 ~ "> 100%"
+    perdrop < 0.5 ~ "< 50%",
+    perdrop <= 1000 ~ "> 50%"
   )) %>%
   I()
 
 # We need to convert the categories into a leveled factor. If we don't do this, the order is wrong.
 internationalmig$groups_perdrop = factor(internationalmig$groups_perdrop,
-                                    levels = c("< -50%", "< -25%", "< 0%", "< 25%", "> 100%"))
+                                    levels = c("< -100%", "< -50%", "< 0%", "< 50%", "> 50%"))
 # Using colorbrewer, we create an RGB color scheme.
 internationalmig$rgb <- "#999999" # we have to initialize the variable first.
 internationalmig$rgb[which(internationalmig$groups_perdrop == levels(internationalmig$groups_perdrop)[1])] <- "#a6611a"
@@ -71,6 +77,5 @@ map_counties <- plot_grid(map_births, map_deaths,
                      map_domesticmig, map_internationalmig,
                      ncol = 2)
 
-#ABBREVIATE DOM MIGRATION AND INTERNATIONAL MIGRATION TITLES ... ONE PARAGRAPH PER EACH PANEL (1 FOR SIMILARITIES 'SPECULATION' - LACKING IN IRS DATA AND 1 FOR DIFFERENCES)
+#ONE PARAGRAPH PER EACH PANEL (1 FOR SIMILARITIES 'SPECULATION' - LACKING IN IRS DATA AND 1 FOR DIFFERENCES)
 
-#DISCONTINUITY BETWEEN LARGER NUMBERS IN SCALE??

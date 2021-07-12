@@ -12,7 +12,8 @@ domesticmig <- dat %>%
   group_by(year, GEOID, STATE, COUNTY, STNAME, CTYNAME) %>% # Grouping by County, County name, and Year
   summarise(domesticmig = sum(domesticmig)) %>%
   group_by(GEOID, CTYNAME) %>%
-  mutate(perdrop = domesticmig/lag(domesticmig)-1) %>%
+  mutate(perdrop = (domesticmig - lag(domesticmig))/abs(lag(domesticmig))) %>%
+  # mutate(perdrop = if_else(lag(domesticmig)<0,abs(perdrop), perdrop)) %>%
   I()
 
 domesticmig$perdrop[is.nan(domesticmig$perdrop)] <- NA # some values are 0/0 or 0/1 or 1/0. We set those to NA
@@ -20,28 +21,30 @@ domesticmig[is.na(domesticmig)] <- 1 # we set all NA values to = 1.0
 
 jenks_domesticmig <-  domesticmig %>%
   filter(year == 2020)
+
+# Some values are Inf and -Inf. We drop them for the Jenks calculations.
+jenks_domesticmig <- jenks_domesticmig[!is.infinite(jenks_domesticmig$perdrop),]
 getJenksBreaks(jenks_domesticmig$perdrop, 5)
 domesticmig <- domesticmig %>%
   filter(year == 2020) # we only want the 2020 change
 
 z <- domesticmig[which(domesticmig$GEOID == "01001"),] %>% 
   filter(GEOID == "01001")
-
 getJenksBreaks(domesticmig$perdrop, 6)
 domesticmig <- domesticmig %>%
   dplyr::select(GEOID, perdrop) %>% # we select just our county ID and the percentage drop
   mutate(groups_perdrop = case_when( # we classify our percentage drops into given categories
-    perdrop <= -0.5 ~ "< -50%",
-    perdrop < -0.25 ~ "< -25%",
+    perdrop <= -1 ~ "< -100%",
+    perdrop < -.5 ~ "< -50%",
     perdrop < 0 ~ "< 0%",
-    perdrop < 0.25 ~ "< 25%",
-    perdrop <= 2 ~ "> 100%"
+    perdrop < .5 ~ "< 50%",
+    perdrop <= 1000 ~ "> 50%"
   )) %>%
   I()
 
 # We need to convert the categories into a leveled factor. If we don't do this, the order is wrong.
 domesticmig$groups_perdrop = factor(domesticmig$groups_perdrop,
-                               levels = c("< -50%", "< -25%", "< 0%", "< 25%", "> 100%"))
+                               levels = c("< -100%", "< -50%", "< 0%", "< 50%", "> 50%"))
 # Using colorbrewer, we create an RGB color scheme.
 domesticmig$rgb <- "#999999" # we have to initialize the variable first.
 domesticmig$rgb[which(domesticmig$groups_perdrop == levels(domesticmig$groups_perdrop)[1])] <- "#ca0020"

@@ -12,7 +12,8 @@ deaths <- dat %>%
   group_by(year, GEOID, STATE, COUNTY, STNAME, CTYNAME) %>% # Grouping by County, County name, and Year
   summarise(deaths = sum(deaths)) %>%
   group_by(GEOID, CTYNAME) %>%
-  mutate(perdrop = deaths/lag(deaths)-1) %>%
+  mutate(perdrop = (deaths - lag(deaths))/abs(lag(deaths))) %>%
+  # mutate(perdrop = if_else(lag(deaths)<0,abs(perdrop), perdrop)) %>%
   I()
 
 deaths$perdrop[is.nan(deaths$perdrop)] <- NA # some values are 0/0 or 0/1 or 1/0. We set those to NA
@@ -20,10 +21,15 @@ deaths[is.na(deaths)] <- 1 # we set all NA values to = 1.0
 
 jenks_deaths <-  deaths %>%
   filter(year == 2020)
+
+# Some values are Inf and -Inf. We drop them for the Jenks calculations.
+jenks_deaths <- jenks_deaaths[!is.infinite(jenks_deaths$perdrop),]
 getJenksBreaks(jenks_deaths$perdrop, 5)
 deaths <- deaths %>%
   filter(year == 2020) # we only want the 2020 change
 
+z <- deaths[which(deaths$GEOID == "01001"),] %>% 
+  filter(GEOID == "01001")
 getJenksBreaks(deaths$perdrop, 6)
 deaths <- deaths %>%
   dplyr::select(GEOID, perdrop) %>% # we select just our county ID and the percentage drop

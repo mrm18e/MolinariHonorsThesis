@@ -44,27 +44,39 @@ births <- dat %>%
   group_by(year, GEOID, STATE, COUNTY, STNAME, CTYNAME) %>% # Grouping by County, County name, and Year
   summarise(births = sum(births)) %>% # Getting the total number of births by year.
   group_by(GEOID, CTYNAME) %>% # Same grouping above but dropping year
-  mutate(perdrop =  births/lag(births)-1)
+  mutate(perdrop =  (births - lag(births))/abs(lag(births))) %>%
+  # mutate(perdrop = if_else(lag(births)<0,abs(perdrop), perdrop)) %>%
+  I()
+  
 births$perdrop[is.nan(births$perdrop)] <- NA # some values are 0/0 or 0/1 or 1/0. We set those to NA
 births[is.na(births)] <- 0 # we set all NA values to = 1.0
 
 jenks_births <-  births %>%
   filter(year == 2020)
+
+# Some values are Inf and -Inf. We drop them for the Jenks calculations.
+jenks_births <- jenks_births[!is.infinite(jenks_births$perdrop),]
+getJenksBreaks(jenks_births$perdrop, 5)
+births <- births %>%
+  filter(year == 2020) # we only want the 2020 change
+
+z <- births[which(births$GEOID == "01001"),] %>% 
+  filter(GEOID == "01001")
 getJenksBreaks(jenks_births$perdrop, 5)
 births <- births %>%
   filter(year == 2020) %>% # we only want the 2020 change
   dplyr::select(GEOID, perdrop) %>% # we select just our county ID and the percentage drop
   mutate(groups_perdrop = case_when( # we classify our percentage drops into given categories
-    perdrop <= -0.5 ~ "< -50%",
-    perdrop < -0.25 ~ "< -25%",
+    perdrop <= -1 ~ "< -100%",
+    perdrop < -0.5 ~ "< -50%",
     perdrop < 0 ~ "< 0%",
-    perdrop < 0.25 ~ "< 25%",
-    perdrop <= 2 ~ "> 100%"
+    perdrop < 0.5 ~ "< 50%",
+    perdrop <= 1000 ~ "> 50%"
   )) %>%
   I()
 # We need to convert the categories into a leveled factor. If we don't do this, the order is wrong.
 births$groups_perdrop = factor(births$groups_perdrop,
-                               levels = c("< -50%", "< -25%", "< 0%", "< 25%", "> 100%"))
+                               levels = c("< -100%", "< -50%", "< 0%", "< 50%", "> 50%"))
 # Using colorbrewer, we create an RGB color scheme.
 births$rgb <- "#999999" # we have to initialize the variable first.
 births$rgb[which(births$groups_perdrop == levels(births$groups_perdrop)[1])] <- "#c51b7d"
