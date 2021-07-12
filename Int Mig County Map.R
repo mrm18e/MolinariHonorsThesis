@@ -28,7 +28,7 @@ getJenksBreaks(internationalmig$perdrop, 6)
 internationalmig <- internationalmig %>%
   dplyr::select(GEOID, perdrop) %>% # we select just our county ID and the percentage drop
   mutate(groups_perdrop = case_when( # we classify our percentage drops into given categories
-    perdrop < -0.5 ~ "< -50%",
+    perdrop <= -0.5 ~ "< -50%",
     perdrop < -0.25 ~ "< -25%",
     perdrop < 0 ~ "< 0%",
     perdrop < 0.25 ~ "< 25%",
@@ -61,7 +61,7 @@ map_internationalmig <-
   theme_bw() +
   coord_sf(datum=NA) +
   theme(legend.position = "right") +
-  labs(fill = "% Change in International Migration")
+  labs(fill = "% Change in Inter. Mig.")
 
 countydat %>%
   ggplot(aes(fill = rgb)) +
@@ -72,3 +72,5 @@ map_counties <- plot_grid(map_births, map_deaths,
                      ncol = 2)
 
 #ABBREVIATE DOM MIGRATION AND INTERNATIONAL MIGRATION TITLES ... ONE PARAGRAPH PER EACH PANEL (1 FOR SIMILARITIES 'SPECULATION' - LACKING IN IRS DATA AND 1 FOR DIFFERENCES)
+
+#DISCONTINUITY BETWEEN LARGER NUMBERS IN SCALE??

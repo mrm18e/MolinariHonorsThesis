@@ -28,7 +28,7 @@ getJenksBreaks(deaths$perdrop, 6)
 deaths <- deaths %>%
   dplyr::select(GEOID, perdrop) %>% # we select just our county ID and the percentage drop
   mutate(groups_perdrop = case_when( # we classify our percentage drops into given categories
-    perdrop < -0.5 ~ "< -50%",
+    perdrop <= -0.5 ~ "< -50%",
     perdrop < -0.25 ~ "< -25%",
     perdrop < 0 ~ "< 0%",
     perdrop < 0.25 ~ "< 25%",
@@ -46,8 +46,6 @@ deaths$rgb[which(deaths$groups_perdrop == levels(deaths$groups_perdrop)[2])] <- 
 deaths$rgb[which(deaths$groups_perdrop == levels(deaths$groups_perdrop)[3])] <- "#eaf322"
 deaths$rgb[which(deaths$groups_perdrop == levels(deaths$groups_perdrop)[4])] <- "#b2abd2"
 deaths$rgb[which(deaths$groups_perdrop == levels(deaths$groups_perdrop)[5])] <- "#5e3c99"
-
-#CHANGE TO MAKE NEGATIVE BIRTHS NOTICEABLE WITH TWO COLOR SCHEME!!
 
 
 # Joining our birth data with our shapefile

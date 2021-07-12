@@ -94,6 +94,4 @@ countydat %>%
   ggplot(aes(fill = rgb)) +
   geom_sf(color = NA)
 
-#GET RID OF WHITE AS THE MIDDLE COLOR, SOLVE PROBLEM FOR TURNING MIGRATION NUMBERS INTO 0 - 100 PERCENTAGES
-
 
