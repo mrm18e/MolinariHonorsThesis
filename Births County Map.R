@@ -68,7 +68,7 @@ births <- births %>%
   dplyr::select(GEOID, perdrop) %>% # we select just our county ID and the percentage drop
   mutate(groups_perdrop = case_when( # we classify our percentage drops into given categories
     perdrop <= -1 ~ "< -100%",
-    perdrop < -0.5 ~ "< -50%",
+    perdrop < -0.25 ~ "< -25%",
     perdrop < 0 ~ "< 0%",
     perdrop < 0.5 ~ "< 50%",
     perdrop <= 1000 ~ "> 50%"
@@ -76,7 +76,7 @@ births <- births %>%
   I()
 # We need to convert the categories into a leveled factor. If we don't do this, the order is wrong.
 births$groups_perdrop = factor(births$groups_perdrop,
-                               levels = c("< -100%", "< -50%", "< 0%", "< 50%", "> 50%"))
+                               levels = c("< -100%", "< -25%", "< 0%", "< 50%", "> 50%"))
 # Using colorbrewer, we create an RGB color scheme.
 births$rgb <- "#999999" # we have to initialize the variable first.
 births$rgb[which(births$groups_perdrop == levels(births$groups_perdrop)[1])] <- "#c51b7d"
@@ -105,5 +105,7 @@ map_births <-
 countydat %>%
   ggplot(aes(fill = rgb)) +
   geom_sf(color = NA)
+
+#CHANGE b8e186 TO GREENISH COLOR SINCE IT'S POSITIVE
 
 
