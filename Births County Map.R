@@ -81,15 +81,17 @@ births$groups_perdrop = factor(births$groups_perdrop,
 births$rgb <- "#999999" # we have to initialize the variable first.
 births$rgb[which(births$groups_perdrop == levels(births$groups_perdrop)[1])] <- "#c51b7d"
 births$rgb[which(births$groups_perdrop == levels(births$groups_perdrop)[2])] <- "#e9a3c9"
-births$rgb[which(births$groups_perdrop == levels(births$groups_perdrop)[3])] <- "#fde0ef"
-births$rgb[which(births$groups_perdrop == levels(births$groups_perdrop)[4])] <- "#b8e186"
+births$rgb[which(births$groups_perdrop == levels(births$groups_perdrop)[3])] <- "#b8e186"
+births$rgb[which(births$groups_perdrop == levels(births$groups_perdrop)[4])] <- "#4dac26"
 births$rgb[which(births$groups_perdrop == levels(births$groups_perdrop)[5])] <- "#4dac26"
 
 
 # Joining our birth data with our shapefile
 countydat <- left_join(shape, births)
 
-pal2 <- c( "#c51b7d",  "#e9a3c9", "#fde0ef",  "#b8e186", "#4dac26")
+pal2 <- c( "#c51b7d",  "#e9a3c9", "#b8e186",  "#4dac26", "#4dac26")
+
+
 
 # Making our map
 map_births <- 
