@@ -4,7 +4,14 @@ library(tidycensus)
 library(scales)
 library(cowplot)
 library(BAMMtools)
-library(hablar)
+library(sp)
+library(sf)
+library(rgdal)
+library(rgeos)
+library(spgwr)
+library(grid)
+library(gridExtra)
+library(spdep)
 
 # downloading a shapefile for US counties. H0010001 is just a generic variable that is not used.
 shape <- get_decennial("county",
@@ -16,11 +23,11 @@ shape <- get_decennial("county",
 
 # downloading a shapefile for US states H0010001 is just a generic variable that is not used.
 states <- get_decennial("state",
-                       variables = "H001001",
-                       year = 2010,
-                       sumfile = "sf1",
-                       geometry = TRUE,
-                       shift_geo = TRUE) %>%
+                        variables = "H001001",
+                        year = 2010,
+                        sumfile = "sf1",
+                        geometry = TRUE,
+                        shift_geo = TRUE) %>%
   mutate(STATE = substr(GEOID,1,2))
 
 
@@ -48,9 +55,10 @@ births <- dat %>%
   mutate(perdrop =  (births - lag(births))/abs(lag(births))) %>%
   # mutate(perdrop = if_else(lag(births)<0,abs(perdrop), perdrop)) %>%
   I()
-  
+
 births$perdrop[is.nan(births$perdrop)] <- NA # some values are 0/0 or 0/1 or 1/0. We set those to NA
 births[is.na(births)] <- 0 # we set all NA values to = 1.0
+
 
 jenks_births <-  births %>%
   filter(year == 2020)
@@ -75,49 +83,19 @@ births <- births %>%
     perdrop <= 1000 ~ "> 50%"
   )) %>%
   I()
-# We need to convert the categories into a leveled factor. If we don't do this, the order is wrong.
-births$groups_perdrop = factor(births$groups_perdrop,
-                               levels = c("< -100%", "< -25%", "< 0%", "< 50%", "> 50%"))
-# Using colorbrewer, we create an RGB color scheme.
-births$rgb <- "#999999" # we have to initialize the variable first.
-births$rgb[which(births$groups_perdrop == levels(births$groups_perdrop)[1])] <- "#c51b7d"
-births$rgb[which(births$groups_perdrop == levels(births$groups_perdrop)[2])] <- "#e9a3c9"
-births$rgb[which(births$groups_perdrop == levels(births$groups_perdrop)[3])] <- "#b8e186"
-births$rgb[which(births$groups_perdrop == levels(births$groups_perdrop)[4])] <- "#4dac26"
-births$rgb[which(births$groups_perdrop == levels(births$groups_perdrop)[5])] <- "#4dac26"
 
-
-# Joining our birth data with our shapefile
-countydat <- left_join(shape, births)
+countydat <- left_join(shape, births) %>%
+  na.omit()
 
 write_sf(countydat, "./R/DATA-PROCESSED/birthshapefile.shp")
 
+# Make our Queen contiguity
+neighbors <- poly2nb(countydat)
 
-pal2 <- c( "#c51b7d",  "#e9a3c9", "#b8e186",  "#4dac26", "#4dac26")
+# countydat <- countydat[-c(2788, 2836, 2995, 3135, 3140, 3141, 3143),] #These are the counties with 0 neighbors and must be deleted.
+neighbors <- poly2nb(countydat)
+listw <- nb2listw(neighbors, style = "B",zero.policy = TRUE)
 
+listw <-nb2mat(neighbors, style = "B", zero.policy = TRUE)
 
-
-# Making our map
-map_births <- 
-  ggplot(data = countydat) +
-  geom_sf(aes(fill = groups_perdrop), color = NA) + # we set the fill to equal the raw color code
-  geom_sf(data = states, fill=NA, color = "black") +
-  scale_fill_manual(values = pal2, na.value = "#999999") +
-  theme_bw() +
-  coord_sf(datum=NA) +
-  theme(legend.position = "right") +
-  labs(fill = "% Change in Births")
-
-countydat %>%
-  ggplot(aes(fill = rgb)) +
-  geom_sf(color = NA)
-
-#CHANGE b8e186 TO GREENISH COLOR SINCE IT'S POSITIVE
-
-#IPUMS USA ... SMALLER THAN COUNTIES ... TAKE INTO ACCOUNT THOSE IN POVERTY AND THEIR VULNERABILITY TO COVID
-
-#POLITICAL VOTING DATA BY COUNTY AND ECONOMIC DATA?? - LESSAN
-#SEQUEL PAPER: POVERTY AND VULNERABILITY (SOCIAL INDICATORS)
-#SEQUEL SEQUEL: vOTING PATTERNS ... DO ONE THING VERY WELL
-
-
+moran.test(countydat$perdrop, listw)

@@ -57,6 +57,8 @@ deaths$rgb[which(deaths$groups_perdrop == levels(deaths$groups_perdrop)[5])] <- 
 # Joining our birth data with our shapefile
 countydat <- left_join(shape, deaths)
 
+write_sf(countydat, "./R/DATA-PROCESSED/deathshapefile.shp")
+
 pal2 <- c( "#e66101",  "#fdb863", "#eaf322",  "#b2abd2", "#5e3c99")
 
 # Making our map

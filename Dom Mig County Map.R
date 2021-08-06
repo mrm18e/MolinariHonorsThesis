@@ -54,7 +54,10 @@ domesticmig$rgb[which(domesticmig$groups_perdrop == levels(domesticmig$groups_pe
 domesticmig$rgb[which(domesticmig$groups_perdrop == levels(domesticmig$groups_perdrop)[5])] <- "#0571b0"
 
 # Joining our birth data with our shapefile
-countydat <- left_join(shape, domesticmig)
+countydat <- left_join(shape, domesticmig)%>%
+  rationalize()
+
+write_sf(countydat, "./R/DATA-PROCESSED/dommigshapefile.shp")
 
 pal2 <- c( "#ca0020",  "#f4a582", "#f4b6c2",  "#92c5de", "#0571b0")
 

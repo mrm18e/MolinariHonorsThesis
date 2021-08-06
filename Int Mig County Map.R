@@ -54,7 +54,11 @@ internationalmig$rgb[which(internationalmig$groups_perdrop == levels(internation
 internationalmig$rgb[which(internationalmig$groups_perdrop == levels(internationalmig$groups_perdrop)[5])] <- "#018571"
 
 # Joining our birth data with our shapefile
-countydat <- left_join(shape, internationalmig)
+countydat <- left_join(shape, internationalmig) %>%
+  rationalize()
+
+
+write_sf(countydat, "./R/DATA-PROCESSED/intmigshapefile.shp")
 
 pal2 <- c( "#a6611a",  "#dfc27d", "#f3deba",  "#80cdc1", "#018571")
 
