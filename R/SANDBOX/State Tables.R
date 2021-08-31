@@ -52,6 +52,11 @@ births <- dat %>%
 births$perdrop[is.nan(births$perdrop)] <- NA # some values are 0/0 or 0/1 or 1/0. We set those to NA
 births[is.na(births)] <- 0 # we set all NA values to = 1.0
 
+births2 <- births %>%
+  # dplyr::select(-perdrop) %>%
+  pivot_wider(names_from = year,
+              values_from = c(births, perdrop)) %>%
+  dplyr::select(-perdrop_2019) %>%
 
 
 ## Making a Deaths dataset
@@ -74,6 +79,12 @@ deaths <- dat %>%
 deaths$perdrop[is.nan(deaths$perdrop)] <- NA # some values are 0/0 or 0/1 or 1/0. We set those to NA
 deaths[is.na(deaths)] <- 1 # we set all NA values to = 1.0
 
+deaths2 <- deaths %>%
+  # dplyr::select(-perdrop) %>%
+  pivot_wider(names_from = year,
+              values_from = c(deaths, perdrop)) %>%
+  dplyr::select(-perdrop_2019) %>%
+
 
 ## Making a Domestic Migrations dataset
 domesticmig <- dat %>%
@@ -95,6 +106,12 @@ domesticmig <- dat %>%
 domesticmig$perdrop[is.nan(domesticmig$perdrop)] <- NA # some values are 0/0 or 0/1 or 1/0. We set those to NA
 domesticmig[is.na(domesticmig)] <- 1 # we set all NA values to = 1.0
 
+domesticmig2 <- domesticmig %>%
+  # dplyr::select(-perdrop) %>%
+  pivot_wider(names_from = year,
+              values_from = c(domesticmig, perdrop)) %>%
+  dplyr::select(-perdrop_2019) %>%
+
 
 ## Making an International Migrations dataset
 internationalmig <- dat %>%
@@ -115,3 +132,9 @@ internationalmig <- dat %>%
 
 internationalmig$perdrop[is.nan(internationalmig$perdrop)] <- NA # some values are 0/0 or 0/1 or 1/0. We set those to NA
 internationalmig[is.na(internationalmig)] <- 1 # we set all NA values to = 1.0
+
+internationalmig2 <- internationalmig %>%
+  # dplyr::select(-perdrop) %>%
+  pivot_wider(names_from = year,
+              values_from = c(internationalmig, perdrop)) %>%
+  dplyr::select(-perdrop_2019)
