@@ -56,7 +56,7 @@ births2 <- births %>%
   # dplyr::select(-perdrop) %>%
   pivot_wider(names_from = year,
               values_from = c(births, perdrop)) %>%
-  dplyr::select(-perdrop_2019) %>%
+  dplyr::select(-perdrop_2019)
 
 
 ## Making a Deaths dataset
@@ -83,7 +83,7 @@ deaths2 <- deaths %>%
   # dplyr::select(-perdrop) %>%
   pivot_wider(names_from = year,
               values_from = c(deaths, perdrop)) %>%
-  dplyr::select(-perdrop_2019) %>%
+  dplyr::select(-perdrop_2019)
 
 
 ## Making a Domestic Migrations dataset
@@ -110,7 +110,7 @@ domesticmig2 <- domesticmig %>%
   # dplyr::select(-perdrop) %>%
   pivot_wider(names_from = year,
               values_from = c(domesticmig, perdrop)) %>%
-  dplyr::select(-perdrop_2019) %>%
+  dplyr::select(-perdrop_2019)
 
 
 ## Making an International Migrations dataset
